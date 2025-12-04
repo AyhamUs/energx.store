@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energx - Premium Energy Drink Subscription</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'energx': {
+                            'purple': '#8B5CF6',
+                            'pink': '#EC4899',
+                            'cyan': '#06B6D4',
+                            'lime': '#84CC16',
+                            'orange': '#F97316',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 3s ease-in-out infinite',
+                        'float-delayed': 'float 3s ease-in-out 0.5s infinite',
+                        'float-delayed-2': 'float 3s ease-in-out 1s infinite',
+                        'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+                        'gradient-x': 'gradient-x 3s ease infinite',
+                        'spin-slow': 'spin 8s linear infinite',
+                        'bounce-slow': 'bounce 2s infinite',
+                    },
+                    keyframes: {
+                        'float': {
+                            '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-20px) rotate(5deg)' },
+                        },
+                        'pulse-glow': {
+                            '0%, 100%': { boxShadow: '0 0 20px rgba(139, 92, 246, 0.5)' },
+                            '50%': { boxShadow: '0 0 40px rgba(236, 72, 153, 0.8)' },
+                        },
+                        'gradient-x': {
+                            '0%, 100%': { backgroundPosition: '0% 50%' },
+                            '50%': { backgroundPosition: '100% 50%' },
+                        },
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 50%, #06B6D4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 50%, #F97316 100%);
+            background-size: 200% 200%;
+        }
+        .gradient-border {
+            background: linear-gradient(135deg, #8B5CF6, #EC4899, #06B6D4) border-box;
+        }
+        .glow-purple {
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
+        }
+        .glow-pink {
+            box-shadow: 0 0 30px rgba(236, 72, 153, 0.4);
+        }
+        .glow-cyan {
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.4);
+        }
+        .card-glow:hover {
+            box-shadow: 0 0 40px rgba(139, 92, 246, 0.3), 0 0 80px rgba(236, 72, 153, 0.2);
+        }
+        .energy-pattern {
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(6, 182, 212, 0.1) 0%, transparent 40%);
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        input[type="checkbox"]:checked + span,
+        input[type="radio"]:checked + span {
+            border-color: #8B5CF6;
+            background: rgba(139, 92, 246, 0.15);
+        }
+        .neon-border {
+            position: relative;
+        }
+        .neon-border::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: inherit;
+            padding: 2px;
+            background: linear-gradient(135deg, #8B5CF6, #EC4899, #06B6D4, #8B5CF6);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: gradient-x 3s ease infinite;
+            background-size: 300% 300%;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-white overflow-x-hidden">
+    <!-- Animated Background -->
+    <div class="fixed inset-0 energy-pattern pointer-events-none"></div>
+    
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <span class="text-3xl animate-pulse">⚡</span>
+                <span class="text-2xl font-black gradient-text">ENERGX</span>
+            </div>
+            <ul class="hidden md:flex gap-8">
+                <li><a href="#home" class="text-slate-400 hover:text-white transition-colors font-medium">Home</a></li>
+                <li><a href="#how-it-works" class="text-slate-400 hover:text-white transition-colors font-medium">How It Works</a></li>
+                <li><a href="#customize" class="text-slate-400 hover:text-white transition-colors font-medium">Build Your Box</a></li>
+                <li><a href="#plans" class="text-slate-400 hover:text-white transition-colors font-medium">Plans</a></li>
+                <li><a href="#brands" class="text-slate-400 hover:text-white transition-colors font-medium">Brands</a></li>
+            </ul>
+            <button class="gradient-bg hover:scale-105 transition-transform px-6 py-2.5 rounded-full font-semibold text-sm animate-pulse-glow">
+                Get Started
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="min-h-screen flex items-center relative pt-20">
+        <div class="max-w-7xl mx-auto px-6 py-20 flex flex-col lg:flex-row items-center justify-between gap-12">
+            <div class="lg:max-w-2xl text-center lg:text-left">
+                <div class="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2 mb-6">
+                    <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                    <span class="text-sm text-slate-400">Now delivering to your area</span>
+                </div>
+                <h1 class="text-5xl md:text-7xl font-black leading-tight mb-6">
+                    Your Perfect Energy,
+                    <span class="gradient-text block">Delivered Monthly</span>
+                </h1>
+                <p class="text-xl text-slate-400 mb-10 leading-relaxed">
+                    Tell us your preferences. We'll curate a personalized box of premium energy drinks 
+                    from top brands — tailored to your taste, caffeine needs, and lifestyle. 🚀
+                </p>
+                <div class="flex flex-wrap justify-center lg:justify-start gap-8 mb-10">
+                    <div class="text-center">
+                        <div class="text-4xl font-black gradient-text">20+</div>
+                        <div class="text-slate-500 text-sm">Brands</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl font-black gradient-text">130+</div>
+                        <div class="text-slate-500 text-sm">Flavors</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl font-black gradient-text">556</div>
+                        <div class="text-slate-500 text-sm">Cans Ready</div>
+                    </div>
+                </div>
+                <a href="#customize" class="inline-flex items-center gap-3 gradient-bg px-8 py-4 rounded-full font-bold text-lg hover:scale-105 transition-transform glow-purple">
+                    <span>Build Your Box</span>
+                    <span class="text-2xl">→</span>
+                </a>
+            </div>
+            <div class="relative w-80 h-80 lg:w-96 lg:h-96">
+                <div class="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-3xl animate-pulse"></div>
+                <div class="absolute top-10 left-10 text-7xl animate-float">🥤</div>
+                <div class="absolute top-20 right-10 text-6xl animate-float-delayed">⚡</div>
+                <div class="absolute bottom-20 left-20 text-5xl animate-float-delayed-2">🔋</div>
+                <div class="absolute bottom-10 right-20 text-4xl animate-float">💥</div>
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-8xl animate-bounce-slow">🚀</div>
+            </div>
+        </div>
+        <!-- Scroll indicator -->
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
+            <span class="text-slate-500 text-sm">Scroll to explore</span>
+            <span class="text-2xl">↓</span>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="py-24 relative">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-purple-900/10 to-transparent"></div>
+        <div class="max-w-7xl mx-auto px-6 relative">
+            <div class="text-center mb-16">
+                <span class="inline-block gradient-bg px-4 py-1 rounded-full text-sm font-semibold mb-4">HOW IT WORKS</span>
+                <h2 class="text-4xl md:text-5xl font-black mb-4">Three Simple Steps</h2>
+                <p class="text-slate-400 text-lg">Getting your perfect energy drink mix has never been easier</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="group bg-slate-900/50 backdrop-blur border border-white/10 rounded-3xl p-8 hover:border-purple-500/50 transition-all duration-300 card-glow hover:-translate-y-2">
+                    <div class="text-purple-400 font-black text-sm mb-4">01</div>
+                    <div class="text-5xl mb-6 group-hover:scale-110 transition-transform">🎯</div>
+                    <h3 class="text-2xl font-bold mb-3">Set Preferences</h3>
+                    <p class="text-slate-400">Tell us about your caffeine tolerance, favorite flavors, and preferred brands.</p>
+                </div>
+                <div class="group bg-slate-900/50 backdrop-blur border border-white/10 rounded-3xl p-8 hover:border-pink-500/50 transition-all duration-300 card-glow hover:-translate-y-2">
+                    <div class="text-pink-400 font-black text-sm mb-4">02</div>
+                    <div class="text-5xl mb-6 group-hover:scale-110 transition-transform">📦</div>
+                    <h3 class="text-2xl font-bold mb-3">We Build Your Box</h3>
+                    <p class="text-slate-400">Our algorithm creates a personalized mix from our inventory of 20+ premium brands.</p>
+                </div>
+                <div class="group bg-slate-900/50 backdrop-blur border border-white/10 rounded-3xl p-8 hover:border-cyan-500/50 transition-all duration-300 card-glow hover:-translate-y-2">
+                    <div class="text-cyan-400 font-black text-sm mb-4">03</div>
+                    <div class="text-5xl mb-6 group-hover:scale-110 transition-transform">🚚</div>
+                    <h3 class="text-2xl font-bold mb-3">Delivered Monthly</h3>
+                    <p class="text-slate-400">Fresh energy drinks arrive at your door every month. Skip or cancel anytime.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Customize Section -->
+    <section id="customize" class="py-24 relative">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <span class="inline-block gradient-bg px-4 py-1 rounded-full text-sm font-semibold mb-4">CUSTOMIZE</span>
+                <h2 class="text-4xl md:text-5xl font-black mb-4">Build Your Perfect Box</h2>
+                <p class="text-slate-400 text-lg">Select your preferences and we'll create a custom box just for you ⚡</p>
+            </div>
+            
+            <form id="preference-form" class="space-y-10">
+                <!-- Caffeine Level -->
+                <div class="bg-slate-900/50 backdrop-blur border border-white/10 rounded-3xl p-8">
+                    <h3 class="text-xl font-bold mb-2 flex items-center gap-2">💪 Caffeine Level</h3>
+                    <p class="text-slate-500 text-sm mb-6">Select your preferred caffeine intensity</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <label class="cursor-pointer">
+                            <input type="checkbox" name="caffeine" value="low" class="hidden peer">
+                            <span class="flex flex-col items-center p-6 bg-slate-800/50 border-2 border-slate-700 rounded-2xl peer-checked:border-purple-500 peer-checked:bg-purple-500/10 hover:border-slate-600 transition-all">
+                                <span class="text-4xl mb-3">☕</span>
+                                <span class="font-bold text-lg">Light</span>
+                                <span class="text-slate-500 text-sm">80-150mg</span>
+                            </span>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="checkbox" name="caffeine" value="medium" class="hidden peer">
+                            <span class="flex flex-col items-center p-6 bg-slate-800/50 border-2 border-slate-700 rounded-2xl peer-checked:border-purple-500 peer-checked:bg-purple-500/10 hover:border-slate-600 transition-all">
+                                <span class="text-4xl mb-3">⚡</span>
+                                <span class="font-bold text-lg">Medium</span>
+                                <span class="text-slate-500 text-sm">160-200mg</span>
+                            </span>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="checkbox" name="caffeine" value="high" class="hidden peer">
+                            <span class="flex flex-col items-center p-6 bg-slate-800/50 border-2 border-slate-700 rounded-2xl peer-checked:border-purple-500 peer-checked:bg-purple-500/10 hover:border-slate-600 transition-all">
+                                <span class="text-4xl mb-3">🔥</span>
+                                <span class="font-bold text-lg">Strong</span>
+                                <span class="text-slate-500 text-sm">240-300mg</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Brand Preferences -->
+                <div class="bg-slate-900/50 backdrop-blur border border-white/10 rounded-3xl p-8">
+                    <h3 class="text-xl font-bold mb-2 flex items-center gap-2">🏷️ Brand Preferences</h3>
+                    <p class="text-slate-500 text-sm mb-6">Select brands you'd like (leave empty for all)</p>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3" id="brand-options">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Drink Category -->
+                <div class="bg-slate-900/50 backdrop-blur border border-white/10 rounded-3xl p-8">
+                    <h3 class="text-xl font-bold mb-2 flex items-center gap-2">🌿 Drink Category</h3>
+                    <p class="text-slate-500 text-sm mb-6">Choose your preferred category</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <label class="cursor-pointer">
+                            <input type="checkbox" name="drinkType" value="regular" checked class="hidden peer">
+                            <span class="flex flex-col items-center p-6 bg-slate-800/50 border-2 border-slate-700 rounded-2xl peer-checked:border-purple-500 peer-checked:bg-purple-500/10 hover:border-slate-600 transition-all">
+                                <span class="text-4xl mb-3">⚡</span>
+                                <span class="font-bold text-lg">Regular Energy</span>
+                                <span class="text-slate-500 text-sm">Classic energy drinks</span>
+                            </span>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="checkbox" name="drinkType" value="healthy" class="hidden peer">
+                            <span class="flex flex-col items-center p-6 bg-slate-800/50 border-2 border-slate-700 rounded-2xl peer-checked:border-purple-500 peer-checked:bg-purple-500/10 hover:border-slate-600 transition-all">
+                                <span class="text-4xl mb-3">🌿</span>
+                                <span class="font-bold text-lg">Health-Focused</span>
+                                <span class="text-slate-500 text-sm">Natural & organic options</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Box Size -->
+                <div class="bg-slate-900/50 backdrop-blur border border-white/10 rounded-3xl p-8">
+                    <h3 class="text-xl font-bold mb-2 flex items-center gap-2">📦 Box Size</h3>
+                    <p class="text-slate-500 text-sm mb-6">How many drinks per month?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="boxSize" value="12" class="hidden peer">
+                            <span class="flex flex-col items-center p-6 bg-slate-800/50 border-2 border-slate-700 rounded-2xl peer-checked:border-purple-500 peer-checked:bg-purple-500/10 hover:border-slate-600 transition-all relative">
+                                <span class="text-5xl font-black gradient-text">12</span>
+                                <span class="font-bold mt-2">Starter</span>
+                                <span class="text-green-400 font-bold text-lg mt-1">$29/mo</span>
+                            </span>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="boxSize" value="24" checked class="hidden peer">
+                            <span class="flex flex-col items-center p-6 bg-slate-800/50 border-2 border-slate-700 rounded-2xl peer-checked:border-purple-500 peer-checked:bg-purple-500/10 hover:border-slate-600 transition-all relative">
+                                <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-pink-500 text-xs font-bold px-3 py-1 rounded-full">POPULAR</span>
+                                <span class="text-5xl font-black gradient-text">24</span>
+                                <span class="font-bold mt-2">Regular</span>
+                                <span class="text-green-400 font-bold text-lg mt-1">$49/mo</span>
+                            </span>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="boxSize" value="36" class="hidden peer">
+                            <span class="flex flex-col items-center p-6 bg-slate-800/50 border-2 border-slate-700 rounded-2xl peer-checked:border-purple-500 peer-checked:bg-purple-500/10 hover:border-slate-600 transition-all relative">
+                                <span class="text-5xl font-black gradient-text">36</span>
+                                <span class="font-bold mt-2">Power User</span>
+                                <span class="text-green-400 font-bold text-lg mt-1">$69/mo</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full gradient-bg py-5 rounded-2xl font-bold text-xl hover:scale-[1.02] transition-transform glow-purple flex items-center justify-center gap-3">
+                    <span class="text-2xl">🎁</span>
+                    <span>Generate My Box</span>
+                </button>
+            </form>
+
+            <!-- Box Preview -->
+            <div id="box-preview" class="hidden mt-10 bg-slate-900/50 backdrop-blur border-2 border-purple-500 rounded-3xl p-8 animate-pulse-glow">
+                <h3 class="text-2xl font-bold text-center mb-6 flex items-center justify-center gap-2">🎉 Your Custom Box</h3>
+                <div class="flex justify-between items-center bg-slate-800/50 rounded-2xl p-6 mb-6">
+                    <div>
+                        <div class="text-2xl font-bold" id="box-count">24 drinks</div>
+                        <div class="text-slate-500" id="box-variety">6 different brands</div>
+                    </div>
+                    <div class="text-3xl font-black gradient-text" id="box-price">$49/month</div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6" id="box-contents">
+                    <!-- Populated by JavaScript -->
+                </div>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button class="flex-1 gradient-bg py-4 rounded-xl font-bold text-lg hover:scale-[1.02] transition-transform" onclick="subscribe()">Subscribe Now 🚀</button>
+                    <button class="px-6 py-4 border-2 border-slate-600 rounded-xl font-bold hover:border-purple-500 transition-colors" onclick="regenerateBox()">🔄 New Mix</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Plans Section -->
+    <section id="plans" class="py-24 relative">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-pink-900/10 to-transparent"></div>
+        <div class="max-w-7xl mx-auto px-6 relative">
+            <div class="text-center mb-16">
+                <span class="inline-block gradient-bg px-4 py-1 rounded-full text-sm font-semibold mb-4">PRICING</span>
+                <h2 class="text-4xl md:text-5xl font-black mb-4">Subscription Plans</h2>
+                <p class="text-slate-400 text-lg">Choose the perfect plan for your energy needs</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-slate-900/50 backdrop-blur border border-white/10 rounded-3xl p-8 hover:border-purple-500/50 transition-all duration-300 card-glow hover:-translate-y-2">
+                    <h3 class="text-2xl font-bold mb-2">Starter</h3>
+                    <div class="flex items-baseline gap-1 mb-6">
+                        <span class="text-5xl font-black gradient-text">$29</span>
+                        <span class="text-slate-500">/month</span>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center gap-3 text-slate-300"><span class="text-green-400">✓</span> 12 energy drinks</li>
+                        <li class="flex items-center gap-3 text-slate-300"><span class="text-green-400">✓</span> 3-4 different brands</li>
+                        <li class="flex items-center gap-3 text-slate-300"><span class="text-green-400">✓</span> Personalized selection</li>
+                        <li class="flex items-center gap-3 text-slate-300"><span class="text-green-400">✓</span> Free shipping</li>
+                        <li class="flex items-center gap-3 text-slate-300"><span class="text-green-400">✓</span> Cancel anytime</li>
+                    </ul>
+                    <button class="w-full py-4 border-2 border-slate-600 rounded-xl font-bold hover:border-purple-500 hover:bg-purple-500/10 transition-all">Choose Starter</button>
+                </div>
+
+                <div class="relative bg-slate-900/50 backdrop-blur border-2 border-purple-500 rounded-3xl p-8 card-glow scale-105">
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 gradient-bg px-4 py-1 rounded-full text-sm font-bold">⭐ BEST VALUE</div>
+                    <h3 class="text-2xl font-bold mb-2">Regular</h3>
+                    <div class="flex items-baseline gap-1 mb-6">
+                        <span class="text-5xl font-black gradient-text">$49</span>
+                        <span class="text-slate-500">/month</span>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center gap-3 text-slate-300"><span class="text-green-400">✓</span> 24 energy drinks</li>
+                        <li class="flex items-center gap-3 text-slate-300"><span class="text-green-400">✓</span> 5-6 different brands</li>
+                        <li class="flex items-center gap-3 text-slate-300"><span class="text-green-400">✓</span> Premium brand access</li>
+                        <li class="flex items-center gap-3 text-slate-300"><span class="text-green-400">✓</span> Free shipping</li>
+                        <li class="flex items-center gap-3 text-slate-300"><span class="text-green-400">✓</span> Priority support</li>
+                        <li class="flex items-center gap-3 text-slate-300"><span class="text-green-400">✓</span> Exclusive flavors</li>
+                    </ul>
+                    <button class="w-full gradient-bg py-4 rounded-xl font-bold hover:scale-[1.02] transition-transform">Choose Regular</button>
+                </div>
+
+                <div class="bg-slate-900/50 backdrop-blur border border-white/10 rounded-3xl p-8 hover:border-purple-500/50 transition-all duration-300 card-glow hover:-translate-y-2">
+                    <h3 class="text-2xl font-bold mb-2">Power User</h3>
+                    <div class="flex items-baseline gap-1 mb-6">
+                        <span class="text-5xl font-black gradient-text">$69</span>
+                        <span class="text-slate-500">/month</span>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center gap-3 text-slate-300"><span class="text-green-400">✓</span> 36 energy drinks</li>
+                        <li class="flex items-center gap-3 text-slate-300"><span class="text-green-400">✓</span> All brands included</li>
+                        <li class="flex items-center gap-3 text-slate-300"><span class="text-green-400">✓</span> Early access</li>
+                        <li class="flex items-center gap-3 text-slate-300"><span class="text-green-400">✓</span> Expedited shipping</li>
+                        <li class="flex items-center gap-3 text-slate-300"><span class="text-green-400">✓</span> VIP support</li>
+                        <li class="flex items-center gap-3 text-slate-300"><span class="text-green-400">✓</span> Monthly surprises</li>
+                    </ul>
+                    <button class="w-full py-4 border-2 border-slate-600 rounded-xl font-bold hover:border-purple-500 hover:bg-purple-500/10 transition-all">Choose Power User</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Brands Section -->
+    <section id="brands" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <span class="inline-block gradient-bg px-4 py-1 rounded-full text-sm font-semibold mb-4">PARTNERS</span>
+                <h2 class="text-4xl md:text-5xl font-black mb-4">Our Brand Partners</h2>
+                <p class="text-slate-400 text-lg">Premium energy drinks from the world's best brands</p>
+            </div>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4" id="brands-showcase">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-24 relative overflow-hidden">
+        <div class="absolute inset-0 gradient-bg opacity-20"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950"></div>
+        <div class="max-w-4xl mx-auto px-6 text-center relative">
+            <h2 class="text-4xl md:text-6xl font-black mb-6">Ready to Get Energized? ⚡</h2>
+            <p class="text-xl text-slate-400 mb-10">Join thousands of energy enthusiasts who never run out of their favorite drinks.</p>
+            <a href="#customize" class="inline-flex items-center gap-3 gradient-bg px-10 py-5 rounded-full font-bold text-xl hover:scale-105 transition-transform glow-purple">
+                <span>Start Your Subscription</span>
+                <span class="text-2xl">🚀</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900/50 border-t border-white/10 py-16">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-12 mb-12">
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="text-2xl">⚡</span>
+                        <span class="text-xl font-black gradient-text">ENERGX</span>
+                    </div>
+                    <p class="text-slate-500">Your premium energy drink subscription service. Curated boxes delivered monthly.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#home" class="text-slate-500 hover:text-white transition-colors">Home</a></li>
+                        <li><a href="#how-it-works" class="text-slate-500 hover:text-white transition-colors">How It Works</a></li>
+                        <li><a href="#customize" class="text-slate-500 hover:text-white transition-colors">Build Your Box</a></li>
+                        <li><a href="#plans" class="text-slate-500 hover:text-white transition-colors">Plans</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Support</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-slate-500 hover:text-white transition-colors">FAQ</a></li>
+                        <li><a href="#" class="text-slate-500 hover:text-white transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="text-slate-500 hover:text-white transition-colors">Shipping Info</a></li>
+                        <li><a href="#" class="text-slate-500 hover:text-white transition-colors">Returns</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Stay Updated</h4>
+                    <p class="text-slate-500 text-sm mb-4">Get exclusive offers and new brand alerts</p>
+                    <form class="flex gap-2">
+                        <input type="email" placeholder="Enter email" class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-purple-500">
+                        <button class="gradient-bg px-4 py-2 rounded-lg font-semibold text-sm hover:scale-105 transition-transform">Join</button>
+                    </form>
+                </div>
+            </div>
+            <div class="border-t border-white/10 pt-8 text-center text-slate-500">
+                <p>© 2025 Energx. All rights reserved. Made with ⚡ for energy lovers.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-slate-900 border border-white/10 rounded-3xl p-10 max-w-md text-center relative">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-500 hover:text-white text-2xl">&times;</button>
+            <div class="text-7xl mb-6">🎉</div>
+            <h2 class="text-3xl font-black mb-4">Awesome Choice!</h2>
+            <p class="text-slate-400 mb-8">Your custom Energx box has been created. You'll receive a confirmation email shortly.</p>
+            <button onclick="closeModal()" class="gradient-bg px-8 py-4 rounded-xl font-bold hover:scale-105 transition-transform">Got it! 🚀</button>
+        </div>
+    </div>
+
+    <script src="inventory.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
