@@ -1,240 +1,283 @@
-// Energx App - Main Application Logic
+// State
+let selectedCaffeine = [];
+let boxSize = 24;
+let boxContents = {}; // { brandName: quantity }
 
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    initializeBrandOptions();
-    initializeBrandsShowcase();
-    setupFormListeners();
-    setupNavigation();
+    initCaffeineButtons();
+    initSizeButtons();
+    renderBrandGrid();
+    renderBrandsShowcase();
+    updateUI();
 });
 
-// Get brand logo HTML with fallback
-function getBrandLogoHTML(brand, size = 'md') {
-    const logos = window.energxInventory.brandLogos;
-    const colors = window.energxInventory.brandColors;
-    const brandColor = colors[brand] || { bg: '#6366f1', text: '#fff' };
+// Caffeine filter buttons
+function initCaffeineButtons() {
+    document.querySelectorAll('.caffeine-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const level = btn.dataset.caffeine;
+            btn.classList.toggle('border-purple-500');
+            btn.classList.toggle('bg-purple-500/10');
+            btn.classList.toggle('border-zinc-700');
+            btn.classList.toggle('bg-zinc-800/50');
+            
+            if (selectedCaffeine.includes(level)) {
+                selectedCaffeine = selectedCaffeine.filter(l => l !== level);
+            } else {
+                selectedCaffeine.push(level);
+            }
+            
+            renderBrandGrid();
+        });
+    });
+}
+
+// Size buttons
+function initSizeButtons() {
+    document.querySelectorAll('.size-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.size-btn').forEach(b => {
+                b.classList.remove('border-purple-500', 'bg-purple-500/10');
+                b.classList.add('border-zinc-700', 'bg-zinc-800/50');
+            });
+            btn.classList.remove('border-zinc-700', 'bg-zinc-800/50');
+            btn.classList.add('border-purple-500', 'bg-purple-500/10');
+            
+            boxSize = parseInt(btn.dataset.size);
+            document.getElementById('target-count').textContent = boxSize;
+            updateUI();
+        });
+    });
+}
+
+// Render the brand selection grid
+function renderBrandGrid() {
+    const grid = document.getElementById('brand-grid');
+    const brands = filterBrands(selectedCaffeine);
     
-    const sizes = {
-        'sm': { container: 'w-8 h-8', text: 'text-xs', img: 'max-h-5' },
-        'md': { container: 'w-12 h-12', text: 'text-sm', img: 'max-h-8' },
-        'lg': { container: 'w-16 h-16', text: 'text-lg', img: 'max-h-12' }
-    };
+    grid.innerHTML = brands.map(brand => {
+        const qty = boxContents[brand.name] || 0;
+        const caffeineLevel = getCaffeineLevel(brand.caffeine);
+        const levelEmoji = caffeineLevel === 'low' ? '☕' : caffeineLevel === 'medium' ? '⚡' : '🔥';
+        
+        return `
+            <div class="brand-card bg-zinc-800/50 border border-zinc-700 rounded-xl p-4 hover:border-zinc-600 transition ${qty > 0 ? 'border-purple-500/50 bg-purple-500/5' : ''}" data-brand="${brand.name}">
+                <div class="flex items-center gap-4 mb-4">
+                    ${getBrandLogo(brand.name, 'md')}
+                    <div class="flex-1">
+                        <div class="font-semibold">${brand.name}</div>
+                        <div class="text-xs text-zinc-500">${brand.caffeine}mg ${levelEmoji}</div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between">
+                    <button onclick="adjustQty('${brand.name}', -1)" class="w-10 h-10 rounded-lg bg-zinc-700 hover:bg-zinc-600 transition flex items-center justify-center text-xl font-bold ${qty === 0 ? 'opacity-30 cursor-not-allowed' : ''}">
+                        −
+                    </button>
+                    <div class="flex-1 text-center">
+                        <span class="text-2xl font-bold ${qty > 0 ? 'text-purple-400' : 'text-zinc-500'}">${qty}</span>
+                        <span class="text-xs text-zinc-500 block">cans</span>
+                    </div>
+                    <button onclick="adjustQty('${brand.name}', 1)" class="w-10 h-10 rounded-lg bg-zinc-700 hover:bg-zinc-600 transition flex items-center justify-center text-xl font-bold ${getCurrentCount() >= boxSize ? 'opacity-30 cursor-not-allowed' : ''}">
+                        +
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Adjust quantity for a brand
+function adjustQty(brand, delta) {
+    const current = boxContents[brand] || 0;
+    const newQty = current + delta;
+    const totalCount = getCurrentCount();
     
-    const s = sizes[size] || sizes.md;
-    const initials = brand.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+    // Can't go below 0
+    if (newQty < 0) return;
     
-    // Use a colored fallback with initials since logo URLs may not work
-    return `
-        <div class="${s.container} rounded-xl flex items-center justify-center font-bold ${s.text} overflow-hidden"
-             style="background: ${brandColor.bg}; color: ${brandColor.text}">
-            ${initials}
+    // Can't exceed box size
+    if (delta > 0 && totalCount >= boxSize) return;
+    
+    // Check stock availability
+    const brandData = getBrandData().find(b => b.name === brand);
+    if (delta > 0 && newQty > brandData.totalCans) return;
+    
+    if (newQty === 0) {
+        delete boxContents[brand];
+    } else {
+        boxContents[brand] = newQty;
+    }
+    
+    renderBrandGrid();
+    updateUI();
+}
+
+// Get current total count
+function getCurrentCount() {
+    return Object.values(boxContents).reduce((sum, qty) => sum + qty, 0);
+}
+
+// Auto-fill the box
+function autoFill() {
+    const remaining = boxSize - getCurrentCount();
+    if (remaining <= 0) return;
+    
+    const brands = filterBrands(selectedCaffeine);
+    if (brands.length === 0) return;
+    
+    // Distribute evenly among available brands
+    const perBrand = Math.ceil(remaining / brands.length);
+    let toAdd = remaining;
+    
+    for (const brand of brands) {
+        if (toAdd <= 0) break;
+        
+        const current = boxContents[brand.name] || 0;
+        const available = Math.min(brand.totalCans - current, perBrand, toAdd);
+        
+        if (available > 0) {
+            boxContents[brand.name] = current + available;
+            toAdd -= available;
+        }
+    }
+    
+    // If still remaining, try to fill from brands with more stock
+    if (toAdd > 0) {
+        for (const brand of brands.sort((a, b) => b.totalCans - a.totalCans)) {
+            if (toAdd <= 0) break;
+            
+            const current = boxContents[brand.name] || 0;
+            const available = Math.min(brand.totalCans - current, toAdd);
+            
+            if (available > 0) {
+                boxContents[brand.name] = current + available;
+                toAdd -= available;
+            }
+        }
+    }
+    
+    renderBrandGrid();
+    updateUI();
+}
+
+// Clear the box
+function clearBox() {
+    boxContents = {};
+    renderBrandGrid();
+    updateUI();
+}
+
+// Update all UI elements
+function updateUI() {
+    const count = getCurrentCount();
+    const progress = (count / boxSize) * 100;
+    
+    // Update count display
+    document.getElementById('current-count').textContent = count;
+    document.getElementById('target-count').textContent = boxSize;
+    
+    // Update progress bar
+    document.getElementById('progress-bar').style.width = `${Math.min(progress, 100)}%`;
+    
+    // Update summary
+    renderSummary();
+    
+    // Update subscribe button
+    const subscribeBtn = document.getElementById('subscribe-btn');
+    if (count === boxSize) {
+        subscribeBtn.disabled = false;
+        subscribeBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    } else {
+        subscribeBtn.disabled = true;
+        subscribeBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    }
+}
+
+// Render box summary
+function renderSummary() {
+    const summary = document.getElementById('box-summary');
+    const count = getCurrentCount();
+    
+    if (count === 0) {
+        summary.innerHTML = `
+            <div class="text-center py-12 text-zinc-500">
+                Add some drinks to your box to see your summary
+            </div>
+        `;
+        return;
+    }
+    
+    const brands = Object.entries(boxContents).sort((a, b) => b[1] - a[1]);
+    const prices = { 12: 29, 24: 49, 36: 69 };
+    const price = prices[boxSize];
+    
+    summary.innerHTML = `
+        <div class="grid gap-3 mb-6">
+            ${brands.map(([brand, qty]) => {
+                const data = brandData[brand] || { logo: null, bg: '#666', initials: brand.substring(0, 2).toUpperCase() };
+                const logoHtml = data.logo 
+                    ? `<div class="w-8 h-8 rounded-lg flex items-center justify-center bg-white p-1">
+                        <img src="${data.logo}" alt="${brand}" class="w-6 h-6 object-contain">
+                       </div>`
+                    : `<div class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold"
+                        style="background-color: ${data.bg}; color: #fff">
+                        ${data.initials}
+                       </div>`;
+                return `
+                    <div class="flex items-center justify-between bg-zinc-800/50 rounded-lg p-3">
+                        <div class="flex items-center gap-3">
+                            ${logoHtml}
+                            <span class="font-medium">${brand}</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="text-zinc-400">${qty} cans</span>
+                            <div class="flex gap-1">
+                                <button onclick="adjustQty('${brand}', -1)" class="w-7 h-7 rounded bg-zinc-700 hover:bg-zinc-600 transition text-sm">−</button>
+                                <button onclick="adjustQty('${brand}', 1)" class="w-7 h-7 rounded bg-zinc-700 hover:bg-zinc-600 transition text-sm ${count >= boxSize ? 'opacity-30' : ''}">+</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('')}
+        </div>
+        <div class="flex justify-between items-center pt-4 border-t border-zinc-700">
+            <div>
+                <div class="text-sm text-zinc-400">Total: ${count}/${boxSize} cans</div>
+                ${count < boxSize ? `<div class="text-xs text-yellow-500">Add ${boxSize - count} more to complete your box</div>` : ''}
+                ${count === boxSize ? `<div class="text-xs text-green-500">✓ Box complete!</div>` : ''}
+            </div>
+            <div class="text-right">
+                <div class="text-2xl font-bold">$${price}</div>
+                <div class="text-xs text-zinc-500">/month</div>
+            </div>
         </div>
     `;
 }
 
-// Initialize brand checkbox options in the preference form
-function initializeBrandOptions() {
-    const brandGrid = document.getElementById('brand-options');
-    const brands = window.energxInventory.getUniqueBrands();
-    
-    brands.forEach(brandInfo => {
-        const label = document.createElement('label');
-        label.className = 'cursor-pointer';
-        label.innerHTML = `
-            <input type="checkbox" name="brand" value="${brandInfo.brand}" class="hidden peer">
-            <span class="flex items-center gap-2 p-3 bg-slate-800/50 border-2 border-slate-700 rounded-xl peer-checked:border-purple-500 peer-checked:bg-purple-500/10 hover:border-slate-600 transition-all">
-                ${getBrandLogoHTML(brandInfo.brand, 'sm')}
-                <span class="text-sm font-medium truncate">${brandInfo.brand}</span>
-            </span>
-        `;
-        
-        brandGrid.appendChild(label);
-    });
-}
-
-// Initialize brands showcase section
-function initializeBrandsShowcase() {
+// Render brands showcase
+function renderBrandsShowcase() {
     const showcase = document.getElementById('brands-showcase');
-    const brands = window.energxInventory.getUniqueBrands();
+    const brands = getBrandData();
     
-    brands.forEach(brandInfo => {
-        const card = document.createElement('div');
-        card.className = 'group bg-slate-900/50 backdrop-blur border border-white/10 rounded-2xl p-6 text-center hover:border-purple-500/50 transition-all duration-300 hover:-translate-y-1';
-        card.innerHTML = `
-            <div class="flex justify-center mb-4 group-hover:scale-110 transition-transform">
-                ${getBrandLogoHTML(brandInfo.brand, 'lg')}
-            </div>
-            <h4 class="font-bold mb-2">${brandInfo.brand}</h4>
-            <span class="text-sm text-emerald-400 font-medium">${brandInfo.caffeine}mg caffeine</span>
-            <div class="mt-2">
-                <span class="text-xs px-2 py-1 rounded-full ${brandInfo.category === 'healthy' ? 'bg-green-500/20 text-green-400' : 'bg-purple-500/20 text-purple-400'}">
-                    ${brandInfo.category === 'healthy' ? '🌿 Health' : '⚡ Classic'}
-                </span>
-            </div>
-        `;
-        showcase.appendChild(card);
-    });
-}
-
-// Setup form event listeners
-function setupFormListeners() {
-    const form = document.getElementById('preference-form');
-    
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        generateBox();
-    });
-}
-
-// Generate custom box based on preferences
-function generateBox() {
-    // Collect preferences
-    const caffeineInputs = document.querySelectorAll('input[name="caffeine"]:checked');
-    const caffeineLevels = Array.from(caffeineInputs).map(i => i.value);
-    
-    const brandInputs = document.querySelectorAll('input[name="brand"]:checked');
-    const selectedBrands = Array.from(brandInputs).map(i => i.value);
-    
-    const drinkTypeInputs = document.querySelectorAll('input[name="drinkType"]:checked');
-    const drinkTypes = Array.from(drinkTypeInputs).map(i => i.value);
-    
-    const boxSizeInput = document.querySelector('input[name="boxSize"]:checked');
-    const boxSize = boxSizeInput ? parseInt(boxSizeInput.value) : 24;
-    
-    const preferences = {
-        caffeineLevels,
-        selectedBrands,
-        drinkTypes
-    };
-    
-    // Build the box
-    const box = window.energxInventory.buildCustomBox(preferences, boxSize);
-    
-    // Display the box
-    displayBox(box, boxSize);
-}
-
-// Display the generated box
-function displayBox(box, boxSize) {
-    const preview = document.getElementById('box-preview');
-    const contents = document.getElementById('box-contents');
-    const countEl = document.getElementById('box-count');
-    const varietyEl = document.getElementById('box-variety');
-    const priceEl = document.getElementById('box-price');
-    
-    // Clear previous contents
-    contents.innerHTML = '';
-    
-    if (box.items.length === 0) {
-        contents.innerHTML = `
-            <div class="col-span-full text-center py-10">
-                <p class="text-5xl mb-4">😕</p>
-                <p class="text-slate-400">No drinks match your preferences. Try adjusting your filters!</p>
-            </div>
-        `;
-        preview.classList.remove('hidden');
-        return;
-    }
-    
-    // Calculate total and price
-    const totalCans = box.items.reduce((sum, item) => sum + item.quantity, 0);
-    const prices = { 12: '$29', 24: '$49', 36: '$69' };
-    
-    // Update summary
-    countEl.textContent = `${totalCans} drinks`;
-    varietyEl.textContent = `${box.variety} different ${box.variety === 1 ? 'brand' : 'brands'}`;
-    priceEl.textContent = `${prices[boxSize] || '$49'}/month`;
-    
-    // Add each item to the box
-    box.items.forEach(item => {
-        const itemEl = document.createElement('div');
-        itemEl.className = 'flex items-center gap-4 p-4 bg-slate-800/50 rounded-xl border border-white/5 hover:border-purple-500/30 transition-all';
-        itemEl.innerHTML = `
-            ${getBrandLogoHTML(item.brand, 'md')}
-            <div class="flex-1 min-w-0">
-                <h4 class="font-bold truncate">${item.brand}</h4>
-                <p class="text-sm text-emerald-400">${item.caffeine}mg caffeine</p>
-            </div>
-            <span class="text-xl font-black text-purple-400">×${item.quantity}</span>
-        `;
-        contents.appendChild(itemEl);
-    });
-    
-    // Show the preview
-    preview.classList.remove('hidden');
-    
-    // Scroll to preview
-    preview.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-// Regenerate box with same preferences but different randomization
-function regenerateBox() {
-    generateBox();
+    showcase.innerHTML = brands.map(brand => `
+        <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex flex-col items-center hover:border-zinc-700 transition">
+            ${getBrandLogo(brand.name, 'lg')}
+            <div class="mt-3 text-sm font-medium text-center">${brand.name}</div>
+            <div class="text-xs text-zinc-500">${brand.caffeine}mg</div>
+        </div>
+    `).join('');
 }
 
 // Subscribe action
 function subscribe() {
-    const modal = document.getElementById('success-modal');
-    modal.classList.remove('hidden');
+    if (getCurrentCount() !== boxSize) return;
+    document.getElementById('success-modal').classList.remove('hidden');
 }
 
 // Close modal
 function closeModal() {
-    const modal = document.getElementById('success-modal');
-    modal.classList.add('hidden');
+    document.getElementById('success-modal').classList.add('hidden');
+    clearBox();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
-// Setup smooth navigation
-function setupNavigation() {
-    // Smooth scroll for nav links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-    });
-    
-    // CTA buttons navigation
-    document.querySelectorAll('.nav-cta, .hero-cta').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelector('#customize').scrollIntoView({ behavior: 'smooth' });
-        });
-    });
-    
-    // Plan buttons
-    document.querySelectorAll('.plan-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const planCard = btn.closest('.plan-card') || btn.closest('div');
-            const planHeader = planCard.querySelector('h3');
-            if (planHeader) {
-                const planName = planHeader.textContent;
-                const sizeMap = { 'Starter': '12', 'Regular': '24', 'Power User': '36' };
-                
-                // Select the corresponding box size
-                const sizeRadio = document.querySelector(`input[name="boxSize"][value="${sizeMap[planName]}"]`);
-                if (sizeRadio) {
-                    sizeRadio.checked = true;
-                }
-            }
-            
-            document.querySelector('#customize').scrollIntoView({ behavior: 'smooth' });
-        });
-    });
-}
-
-// Close modal on outside click
-document.addEventListener('click', (e) => {
-    const modal = document.getElementById('success-modal');
-    if (e.target === modal) {
-        closeModal();
-    }
-});
-
-// Close modal on Escape key
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        closeModal();
-    }
-});
