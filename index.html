@@ -22,6 +22,7 @@
         .gradient-text {
             background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         .gradient-bg {
@@ -267,6 +268,94 @@
             </div>
         </div>
     </footer>
+
+    <!-- Order Modal -->
+    <div id="order-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Complete Your Order</h2>
+                <button onclick="closeOrderModal()" class="text-zinc-500 hover:text-white text-2xl">&times;</button>
+            </div>
+            
+            <form id="order-form" onsubmit="submitOrder(event)">
+                <!-- Contact Info -->
+                <div class="space-y-4 mb-6">
+                    <div>
+                        <label class="block text-sm text-zinc-400 mb-2">Full Name *</label>
+                        <input type="text" name="name" required class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-zinc-400 mb-2">Email *</label>
+                        <input type="email" name="email" required class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-zinc-400 mb-2">Phone</label>
+                        <input type="tel" name="phone" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-zinc-400 mb-2">Delivery Address *</label>
+                        <textarea name="address" required rows="2" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none transition resize-none"></textarea>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="bg-zinc-800/50 rounded-xl p-4 mb-6">
+                    <h3 class="font-semibold mb-3">Order Summary</h3>
+                    <div id="order-summary-items" class="text-sm text-zinc-400 space-y-1 mb-3"></div>
+                    <div class="flex justify-between font-bold text-lg pt-3 border-t border-zinc-700">
+                        <span>Total</span>
+                        <span id="order-total">$49</span>
+                    </div>
+                </div>
+
+                <!-- Payment Method -->
+                <div class="mb-6">
+                    <label class="block text-sm text-zinc-400 mb-3">Payment Method *</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="payment" value="cash" required class="hidden peer">
+                            <div class="border border-zinc-700 rounded-xl p-4 text-center peer-checked:border-purple-500 peer-checked:bg-purple-500/10 transition hover:border-zinc-600">
+                                <div class="text-2xl mb-1">💵</div>
+                                <div class="font-medium">Cash</div>
+                                <div class="text-xs text-zinc-500">Pay on delivery</div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="payment" value="venmo" required class="hidden peer">
+                            <div class="border border-zinc-700 rounded-xl p-4 text-center peer-checked:border-purple-500 peer-checked:bg-purple-500/10 transition hover:border-zinc-600">
+                                <div class="text-2xl mb-1">📱</div>
+                                <div class="font-medium">Venmo</div>
+                                <div class="text-xs text-zinc-500">Pay via QR code</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Venmo Instructions (hidden by default) -->
+                <div id="venmo-instructions" class="hidden mb-6 bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
+                    <h4 class="font-semibold text-blue-400 mb-3">Venmo Payment Instructions</h4>
+                    <div class="flex gap-4 items-center">
+                        <div class="bg-white p-3 rounded-lg">
+                            <!-- Placeholder QR code - replace with actual Venmo QR -->
+                            <div class="w-32 h-32 bg-zinc-200 flex items-center justify-center text-zinc-500 text-xs text-center">
+                                [Your Venmo QR Code]
+                            </div>
+                        </div>
+                        <div class="text-sm text-zinc-300">
+                            <p class="mb-2">1. Scan QR code with your Venmo app</p>
+                            <p class="mb-2">2. Enter the order total: <strong id="venmo-amount">$49</strong></p>
+                            <p class="mb-2">3. Add your email in the note</p>
+                            <p>4. Submit the order form below</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" id="submit-order-btn" class="w-full gradient-bg py-4 rounded-xl font-semibold text-lg hover:opacity-90 transition">
+                    Place Order
+                </button>
+            </form>
+        </div>
+    </div>
 
     <!-- Success Modal -->
     <div id="success-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">

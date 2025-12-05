@@ -269,13 +269,105 @@ function renderBrandsShowcase() {
     `).join('');
 }
 
-// Subscribe action
+// Subscribe action - opens order modal
 function subscribe() {
     if (getCurrentCount() !== boxSize) return;
-    document.getElementById('success-modal').classList.remove('hidden');
+    openOrderModal();
 }
 
-// Close modal
+// Open order modal
+function openOrderModal() {
+    const prices = { 12: 29, 24: 49, 36: 69 };
+    const price = prices[boxSize];
+    
+    // Populate order summary
+    const brands = Object.entries(boxContents).sort((a, b) => b[1] - a[1]);
+    document.getElementById('order-summary-items').innerHTML = brands
+        .map(([brand, qty]) => `<div class="flex justify-between"><span>${brand}</span><span>${qty} cans</span></div>`)
+        .join('');
+    
+    document.getElementById('order-total').textContent = `$${price}`;
+    document.getElementById('venmo-amount').textContent = `$${price}`;
+    
+    // Reset form
+    document.getElementById('order-form').reset();
+    document.getElementById('venmo-instructions').classList.add('hidden');
+    
+    // Show modal
+    document.getElementById('order-modal').classList.remove('hidden');
+    
+    // Setup payment method toggle
+    document.querySelectorAll('input[name="payment"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            const venmoInstructions = document.getElementById('venmo-instructions');
+            if (e.target.value === 'venmo') {
+                venmoInstructions.classList.remove('hidden');
+            } else {
+                venmoInstructions.classList.add('hidden');
+            }
+        });
+    });
+}
+
+// Close order modal
+function closeOrderModal() {
+    document.getElementById('order-modal').classList.add('hidden');
+}
+
+// Submit order
+async function submitOrder(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    const submitBtn = document.getElementById('submit-order-btn');
+    
+    // Disable button and show loading
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Processing...';
+    
+    const prices = { 12: 29, 24: 49, 36: 69 };
+    
+    // Prepare order data
+    const orderData = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        phone: formData.get('phone') || '',
+        address: formData.get('address'),
+        payment: formData.get('payment'),
+        boxSize: boxSize,
+        total: prices[boxSize],
+        items: Object.entries(boxContents).map(([brand, qty]) => `${brand}: ${qty}`).join(', '),
+        timestamp: new Date().toISOString()
+    };
+    
+    try {
+        // Google Apps Script Web App URL
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbweBxyG9GmCOhgHbxSN9fszBnVCj2e-AuXI1XTW__oI6DoUgyDnAgGcoJr0kRpC0Dkx_w/exec';
+        
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(orderData)
+        });
+        
+        // Close order modal and show success
+        closeOrderModal();
+        document.getElementById('success-modal').classList.remove('hidden');
+        
+    } catch (error) {
+        console.error('Order submission error:', error);
+        alert('There was an error submitting your order. Please try again.');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Place Order';
+    }
+}
+
+// Close success modal
 function closeModal() {
     document.getElementById('success-modal').classList.add('hidden');
     clearBox();
