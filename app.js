@@ -343,7 +343,7 @@ async function submitOrder(event) {
     
     try {
         // Google Apps Script Web App URL
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbweBxyG9GmCOhgHbxSN9fszBnVCj2e-AuXI1XTW__oI6DoUgyDnAgGcoJr0kRpC0Dkx_w/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwM0KN_rJFXSwgvvpltKbTRH5ZzaTTkLDfdUwUA_I9LrxwuhkrnwXuiy8u698FZ5HaG4A/exec';
         
         const response = await fetch(SCRIPT_URL, {
             method: 'POST',
