@@ -119,21 +119,45 @@
                     </div>
                 </div>
 
+                <!-- Flavor Preferences -->
+                <div class="mb-8">
+                    <label class="text-sm text-zinc-400 mb-3 block">Flavor Preferences (optional - select all that apply)</label>
+                    <div class="flex flex-wrap gap-3">
+                        <button type="button" data-flavor="fruity" class="flavor-btn px-5 py-3 rounded-xl border border-zinc-700 bg-zinc-800/50 hover:border-purple-500 transition text-sm">
+                            🍓 Fruity
+                        </button>
+                        <button type="button" data-flavor="citrus" class="flavor-btn px-5 py-3 rounded-xl border border-zinc-700 bg-zinc-800/50 hover:border-purple-500 transition text-sm">
+                            🍋 Citrus
+                        </button>
+                        <button type="button" data-flavor="tropical" class="flavor-btn px-5 py-3 rounded-xl border border-zinc-700 bg-zinc-800/50 hover:border-purple-500 transition text-sm">
+                            🥥 Tropical
+                        </button>
+                        <button type="button" data-flavor="berry" class="flavor-btn px-5 py-3 rounded-xl border border-zinc-700 bg-zinc-800/50 hover:border-purple-500 transition text-sm">
+                            🫐 Berry
+                        </button>
+                        <button type="button" data-flavor="classic" class="flavor-btn px-5 py-3 rounded-xl border border-zinc-700 bg-zinc-800/50 hover:border-purple-500 transition text-sm">
+                            ⚡ Classic/Original
+                        </button>
+                        <button type="button" data-flavor="sour" class="flavor-btn px-5 py-3 rounded-xl border border-zinc-700 bg-zinc-800/50 hover:border-purple-500 transition text-sm">
+                            😝 Sour
+                        </button>
+                        <button type="button" data-flavor="candy" class="flavor-btn px-5 py-3 rounded-xl border border-zinc-700 bg-zinc-800/50 hover:border-purple-500 transition text-sm">
+                            🍬 Candy
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Box Size -->
                 <div>
                     <label class="text-sm text-zinc-400 mb-3 block">Box Size</label>
                     <div class="flex flex-wrap gap-3">
-                        <button type="button" data-size="12" class="size-btn px-6 py-4 rounded-xl border border-zinc-700 bg-zinc-800/50 hover:border-purple-500 transition">
+                        <button type="button" data-size="6" class="size-btn px-6 py-4 rounded-xl border border-zinc-700 bg-zinc-800/50 hover:border-purple-500 transition">
+                            <div class="text-2xl font-bold">6</div>
+                            <div class="text-xs text-zinc-400">$15/mo</div>
+                        </button>
+                        <button type="button" data-size="12" class="size-btn active px-6 py-4 rounded-xl border border-purple-500 bg-purple-500/10 transition">
                             <div class="text-2xl font-bold">12</div>
-                            <div class="text-xs text-zinc-400">$29/mo</div>
-                        </button>
-                        <button type="button" data-size="24" class="size-btn active px-6 py-4 rounded-xl border border-purple-500 bg-purple-500/10 transition">
-                            <div class="text-2xl font-bold">24</div>
-                            <div class="text-xs text-zinc-400">$49/mo</div>
-                        </button>
-                        <button type="button" data-size="36" class="size-btn px-6 py-4 rounded-xl border border-zinc-700 bg-zinc-800/50 hover:border-purple-500 transition">
-                            <div class="text-2xl font-bold">36</div>
-                            <div class="text-xs text-zinc-400">$69/mo</div>
+                            <div class="text-xs text-zinc-400">$25/mo</div>
                         </button>
                     </div>
                 </div>
@@ -148,7 +172,7 @@
                     </h3>
                     <div class="flex items-center gap-4">
                         <span class="text-sm text-zinc-400">
-                            <span id="current-count" class="text-white font-bold">0</span> / <span id="target-count">24</span> cans
+                            <span id="current-count" class="text-white font-bold">0</span> / <span id="target-count">12</span> cans
                         </span>
                         <button onclick="autoFill()" class="text-sm px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition">
                             ✨ Auto-fill
@@ -212,13 +236,13 @@
                 <h2 class="text-4xl font-bold mb-4">Simple Pricing</h2>
                 <p class="text-zinc-400">Choose your box size. Cancel anytime.</p>
             </div>
-            <div class="grid md:grid-cols-3 gap-6">
+            <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
                 <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 hover:border-zinc-700 transition">
                     <h3 class="text-xl font-semibold mb-2">Starter</h3>
-                    <div class="text-4xl font-bold mb-1">$29<span class="text-lg text-zinc-500">/mo</span></div>
-                    <p class="text-zinc-500 text-sm mb-6">12 cans per month</p>
+                    <div class="text-4xl font-bold mb-1">$15<span class="text-lg text-zinc-500">/mo</span></div>
+                    <p class="text-zinc-500 text-sm mb-6">6 cans per month</p>
                     <ul class="space-y-3 text-sm text-zinc-400 mb-8">
-                        <li class="flex items-center gap-2"><span class="text-green-500">✓</span> 12 energy drinks</li>
+                        <li class="flex items-center gap-2"><span class="text-green-500">✓</span> 6 energy drinks</li>
                         <li class="flex items-center gap-2"><span class="text-green-500">✓</span> Full customization</li>
                         <li class="flex items-center gap-2"><span class="text-green-500">✓</span> Free shipping</li>
                         <li class="flex items-center gap-2"><span class="text-green-500">✓</span> Cancel anytime</li>
@@ -228,27 +252,15 @@
                 <div class="bg-zinc-900 border-2 border-purple-500 rounded-2xl p-8 relative glow">
                     <div class="absolute -top-3 left-1/2 -translate-x-1/2 gradient-bg px-4 py-1 rounded-full text-xs font-semibold">POPULAR</div>
                     <h3 class="text-xl font-semibold mb-2">Regular</h3>
-                    <div class="text-4xl font-bold mb-1">$49<span class="text-lg text-zinc-500">/mo</span></div>
-                    <p class="text-zinc-500 text-sm mb-6">24 cans per month</p>
+                    <div class="text-4xl font-bold mb-1">$25<span class="text-lg text-zinc-500">/mo</span></div>
+                    <p class="text-zinc-500 text-sm mb-6">12 cans per month</p>
                     <ul class="space-y-3 text-sm text-zinc-400 mb-8">
-                        <li class="flex items-center gap-2"><span class="text-green-500">✓</span> 24 energy drinks</li>
+                        <li class="flex items-center gap-2"><span class="text-green-500">✓</span> 12 energy drinks</li>
                         <li class="flex items-center gap-2"><span class="text-green-500">✓</span> Full customization</li>
                         <li class="flex items-center gap-2"><span class="text-green-500">✓</span> Free shipping</li>
                         <li class="flex items-center gap-2"><span class="text-green-500">✓</span> Priority support</li>
                     </ul>
                     <a href="#builder" class="block text-center py-3 gradient-bg rounded-xl font-semibold hover:opacity-90 transition">Select</a>
-                </div>
-                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 hover:border-zinc-700 transition">
-                    <h3 class="text-xl font-semibold mb-2">Power User</h3>
-                    <div class="text-4xl font-bold mb-1">$69<span class="text-lg text-zinc-500">/mo</span></div>
-                    <p class="text-zinc-500 text-sm mb-6">36 cans per month</p>
-                    <ul class="space-y-3 text-sm text-zinc-400 mb-8">
-                        <li class="flex items-center gap-2"><span class="text-green-500">✓</span> 36 energy drinks</li>
-                        <li class="flex items-center gap-2"><span class="text-green-500">✓</span> Full customization</li>
-                        <li class="flex items-center gap-2"><span class="text-green-500">✓</span> Free expedited shipping</li>
-                        <li class="flex items-center gap-2"><span class="text-green-500">✓</span> VIP support</li>
-                    </ul>
-                    <a href="#builder" class="block text-center py-3 border border-zinc-700 rounded-xl hover:border-purple-500 transition">Select</a>
                 </div>
             </div>
         </div>

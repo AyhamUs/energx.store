@@ -1,11 +1,13 @@
 // State
 let selectedCaffeine = [];
-let boxSize = 24;
+let selectedFlavors = [];
+let boxSize = 12;
 let boxContents = {}; // { brandName: quantity }
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     initCaffeineButtons();
+    initFlavorButtons();
     initSizeButtons();
     renderBrandGrid();
     renderBrandsShowcase();
@@ -26,6 +28,27 @@ function initCaffeineButtons() {
                 selectedCaffeine = selectedCaffeine.filter(l => l !== level);
             } else {
                 selectedCaffeine.push(level);
+            }
+            
+            renderBrandGrid();
+        });
+    });
+}
+
+// Flavor filter buttons
+function initFlavorButtons() {
+    document.querySelectorAll('.flavor-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const flavor = btn.dataset.flavor;
+            btn.classList.toggle('border-purple-500');
+            btn.classList.toggle('bg-purple-500/10');
+            btn.classList.toggle('border-zinc-700');
+            btn.classList.toggle('bg-zinc-800/50');
+            
+            if (selectedFlavors.includes(flavor)) {
+                selectedFlavors = selectedFlavors.filter(f => f !== flavor);
+            } else {
+                selectedFlavors.push(flavor);
             }
             
             renderBrandGrid();
@@ -209,7 +232,7 @@ function renderSummary() {
     }
     
     const brands = Object.entries(boxContents).sort((a, b) => b[1] - a[1]);
-    const prices = { 12: 29, 24: 49, 36: 69 };
+    const prices = { 6: 15, 12: 25 };
     const price = prices[boxSize];
     
     summary.innerHTML = `
@@ -277,14 +300,27 @@ function subscribe() {
 
 // Open order modal
 function openOrderModal() {
-    const prices = { 12: 29, 24: 49, 36: 69 };
+    const prices = { 6: 15, 12: 25 };
     const price = prices[boxSize];
     
     // Populate order summary
     const brands = Object.entries(boxContents).sort((a, b) => b[1] - a[1]);
-    document.getElementById('order-summary-items').innerHTML = brands
+    let summaryHtml = '';
+    
+    // Add preferences if any selected
+    if (selectedCaffeine.length > 0) {
+        summaryHtml += `<div class="flex justify-between text-xs"><span class="text-zinc-500">Caffeine:</span><span>${selectedCaffeine.join(', ')}</span></div>`;
+    }
+    if (selectedFlavors.length > 0) {
+        summaryHtml += `<div class="flex justify-between text-xs mb-2"><span class="text-zinc-500">Flavors:</span><span>${selectedFlavors.join(', ')}</span></div>`;
+    }
+    
+    // Add brands
+    summaryHtml += brands
         .map(([brand, qty]) => `<div class="flex justify-between"><span>${brand}</span><span>${qty} cans</span></div>`)
         .join('');
+    
+    document.getElementById('order-summary-items').innerHTML = summaryHtml;
     
     document.getElementById('order-total').textContent = `$${price}`;
     document.getElementById('venmo-amount').textContent = `$${price}`;
@@ -326,7 +362,7 @@ async function submitOrder(event) {
     submitBtn.disabled = true;
     submitBtn.textContent = 'Processing...';
     
-    const prices = { 12: 29, 24: 49, 36: 69 };
+    const prices = { 6: 15, 12: 25 };
     
     // Prepare order data
     const orderData = {
@@ -335,6 +371,8 @@ async function submitOrder(event) {
         phone: formData.get('phone') || '',
         address: formData.get('address'),
         payment: formData.get('payment'),
+        caffeinePreferences: selectedCaffeine.length > 0 ? selectedCaffeine.join(', ') : 'None',
+        flavorPreferences: selectedFlavors.length > 0 ? selectedFlavors.join(', ') : 'None',
         boxSize: boxSize,
         total: prices[boxSize],
         items: Object.entries(boxContents).map(([brand, qty]) => `${brand}: ${qty}`).join(', '),
@@ -343,7 +381,7 @@ async function submitOrder(event) {
     
     try {
         // Google Apps Script Web App URL
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwM0KN_rJFXSwgvvpltKbTRH5ZzaTTkLDfdUwUA_I9LrxwuhkrnwXuiy8u698FZ5HaG4A/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzdUSVay5qD16K-siN4Dx1KsriTypn14ZP4tjNfAaw1HCLd67EM5zmIyIbPvUl2KJnxxA/exec';
         
         const response = await fetch(SCRIPT_URL, {
             method: 'POST',
