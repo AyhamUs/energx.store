@@ -3,6 +3,8 @@ let selectedCaffeine = [];
 let selectedFlavors = [];
 let boxSize = 12;
 let boxContents = {}; // { brandName: quantity }
+// Max items allowed per single brand (per energy drink)
+const MAX_PER_BRAND = 2;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -83,14 +85,19 @@ function renderBrandGrid() {
         const qty = boxContents[brand.name] || 0;
         const caffeineLevel = getCaffeineLevel(brand.caffeine);
         const levelEmoji = caffeineLevel === 'low' ? '☕' : caffeineLevel === 'medium' ? '⚡' : '🔥';
-        
+        // Determine if + should be disabled due to box full, per-brand cap, or stock
+        const boxFull = getCurrentCount() >= boxSize;
+        const atBrandCap = qty >= MAX_PER_BRAND;
+        const outOfStock = qty >= brand.totalCans;
+        const disablePlus = boxFull || atBrandCap || outOfStock;
+
         return `
             <div class="brand-card bg-zinc-800/50 border border-zinc-700 rounded-xl p-4 hover:border-zinc-600 transition ${qty > 0 ? 'border-purple-500/50 bg-purple-500/5' : ''}" data-brand="${brand.name}">
                 <div class="flex items-center gap-4 mb-4">
                     ${getBrandLogo(brand.name, 'md')}
                     <div class="flex-1">
                         <div class="font-semibold">${brand.name}</div>
-                        <div class="text-xs text-zinc-500">${brand.caffeine}mg ${levelEmoji}</div>
+                        <div class="text-xs text-zinc-500">${brand.caffeine}mg ${levelEmoji}${atBrandCap ? ' • Max 2 per drink' : ''}</div>
                     </div>
                 </div>
                 <div class="flex items-center justify-between">
@@ -101,7 +108,7 @@ function renderBrandGrid() {
                         <span class="text-2xl font-bold ${qty > 0 ? 'text-purple-400' : 'text-zinc-500'}">${qty}</span>
                         <span class="text-xs text-zinc-500 block">cans</span>
                     </div>
-                    <button onclick="adjustQty('${brand.name}', 1)" class="w-10 h-10 rounded-lg bg-zinc-700 hover:bg-zinc-600 transition flex items-center justify-center text-xl font-bold ${getCurrentCount() >= boxSize ? 'opacity-30 cursor-not-allowed' : ''}">
+                    <button onclick="adjustQty('${brand.name}', 1)" class="w-10 h-10 rounded-lg ${disablePlus ? 'bg-zinc-700 opacity-30 cursor-not-allowed' : 'bg-zinc-700 hover:bg-zinc-600'} transition flex items-center justify-center text-xl font-bold" ${disablePlus ? 'disabled' : ''}>
                         +
                     </button>
                 </div>
@@ -121,6 +128,9 @@ function adjustQty(brand, delta) {
     
     // Can't exceed box size
     if (delta > 0 && totalCount >= boxSize) return;
+    
+    // Can't exceed per-brand maximum
+    if (delta > 0 && newQty > MAX_PER_BRAND) return;
     
     // Check stock availability
     const brandData = getBrandData().find(b => b.name === brand);
@@ -157,7 +167,9 @@ function autoFill() {
         if (toAdd <= 0) break;
         
         const current = boxContents[brand.name] || 0;
-        const available = Math.min(brand.totalCans - current, perBrand, toAdd);
+            // Respect stock and MAX_PER_BRAND cap
+            const maxCanAddForBrand = Math.max(0, Math.min(MAX_PER_BRAND - current, brand.totalCans - current));
+            const available = Math.min(maxCanAddForBrand, perBrand, toAdd);
         
         if (available > 0) {
             boxContents[brand.name] = current + available;
@@ -171,7 +183,8 @@ function autoFill() {
             if (toAdd <= 0) break;
             
             const current = boxContents[brand.name] || 0;
-            const available = Math.min(brand.totalCans - current, toAdd);
+            const maxCanAddForBrand = Math.max(0, Math.min(MAX_PER_BRAND - current, brand.totalCans - current));
+            const available = Math.min(maxCanAddForBrand, toAdd);
             
             if (available > 0) {
                 boxContents[brand.name] = current + available;
@@ -257,7 +270,7 @@ function renderSummary() {
                             <span class="text-zinc-400">${qty} cans</span>
                             <div class="flex gap-1">
                                 <button onclick="adjustQty('${brand}', -1)" class="w-7 h-7 rounded bg-zinc-700 hover:bg-zinc-600 transition text-sm">−</button>
-                                <button onclick="adjustQty('${brand}', 1)" class="w-7 h-7 rounded bg-zinc-700 hover:bg-zinc-600 transition text-sm ${count >= boxSize ? 'opacity-30' : ''}">+</button>
+                                <button onclick="adjustQty('${brand}', 1)" class="w-7 h-7 rounded ${count >= boxSize || qty >= MAX_PER_BRAND ? 'bg-zinc-700 opacity-30 cursor-not-allowed' : 'bg-zinc-700 hover:bg-zinc-600'} transition text-sm" ${count >= boxSize || qty >= MAX_PER_BRAND ? 'disabled' : ''}>+</button>
                             </div>
                         </div>
                     </div>

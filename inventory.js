@@ -17,14 +17,17 @@ const brandData = {
     'Bloom': { logo: 'logos/bloom.png', bg: '#ff85a2', initials: 'BL' },
     'Guru': { logo: 'logos/guru.png', bg: '#32cd32', initials: 'GU' },
     'Gorgie': { logo: 'logos/gorgie.png', bg: '#ffb347', initials: 'GO' },
-    'PHX': { logo: null, bg: '#4169e1', initials: 'PHX' },
+    'PHX': { logo: 'logos/phx.png', bg: '#4169e1', initials: 'PHX' },
     'LifeAid': { logo: 'logos/lifeaid.png', bg: '#228b22', initials: 'LA' },
-    'Lucky': { logo: null, bg: '#00ced1', initials: 'LK' },
-    'Accelerator': { logo: null, bg: '#9932cc', initials: 'AC' },
-    'Riot': { logo: null, bg: '#dc143c', initials: 'RT' },
+    'Lucky': { logo: 'logos/lucky.png', bg: '#00ced1', initials: 'LK' },
+    'Accelerator': { logo: 'logos/accelerator.png', bg: '#9932cc', initials: 'AC' },
+    'Riot': { logo: 'logos/riot.png', bg: '#dc143c', initials: 'RT' },
     'Redcon1': { logo: 'logos/redcon1.png', bg: '#b22222', initials: 'RC' },
-    'Omni': { logo: null, bg: '#4682b4', initials: 'OM' }
+    'Omni': { logo: 'logos/omni.png', bg: '#4682b4', initials: 'OM' }
 };
+
+// Add Bubblr brand
+brandData['Bubblr'] = { logo: 'logos/bubblr.png', bg: '#00bcd4', initials: 'BB' };
 
 // Keep brandColors for backwards compatibility
 const brandColors = brandData;
@@ -68,6 +71,7 @@ const inventory = [
     { brand: 'Redcon1', flavors: 3, cansPerFlavor: 4, totalCans: 12, caffeine: 200 },
     { brand: 'Omni', flavors: 3, cansPerFlavor: 4, totalCans: 12, caffeine: 200 },
     { brand: 'Omni', flavors: 3, cansPerFlavor: 4, totalCans: 12, caffeine: 200 }
+    ,{ brand: 'Bubblr', flavors: 3, cansPerFlavor: 2, totalCans: 20, caffeine: 69 }
 ];
 
 // Get aggregated brand data
